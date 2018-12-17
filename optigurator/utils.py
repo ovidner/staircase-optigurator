@@ -420,7 +420,7 @@ def format_degree(num):
 
 
 def format_millimeter(num):
-    return "{:.1f}".format(num * 1000)
+    return "{:.1f} mm".format(num * 1000)
 
 
 def format_percent(num):
