@@ -1,0 +1,2 @@
+FLASK_APP=optigurator
+FLASK_ENV=development

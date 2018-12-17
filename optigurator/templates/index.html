@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{%- block breadcrumb -%}
+  <li class="breadcrumb-item active" aria-current="page">Home</li>
+{%- endblock -%}
+
+{%- block main -%}
+  <p>Select the document that contains the input Part Studio and feature.</p>
+  <div class="row">
+    {% for document in data["items"] %}
+      <div class="col-sm-3 mb-3">
+        <div class="card bg-light">
+          <div class="card-body">
+            <h2 class="h5 card-title">{{ document["name"] }}</h2>
+            <p class="h6 card-subtitle mb-2 text-muted">{{ document["owner"]["name"] }}</p>
+            <!-- {{ document|tojson(indent=2) }} -->
+            <a href="{{ url_for("main.elements", document_id=document["id"], workspace_id=document["defaultWorkspace"]["id"]) }}" class="card-link">Default workspace ({{ document["defaultWorkspace"]["name"] }})</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{%- endblock -%}

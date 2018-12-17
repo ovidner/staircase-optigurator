@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{%- block breadcrumb -%}
+  <li class="breadcrumb-item"><a href="{{ url_for("main.index") }}">Home</a></li>
+  <li class="breadcrumb-item"><a href="{{ url_for("main.elements", document_id=document_id, workspace_id=workspace_id) }}">Document &lt;{{ document_id }}&gt; @ Workspace &lt;{{ workspace_id }}&gt;</a></li>
+  <li class="breadcrumb-item"><a href="{{ url_for("main.features", document_id=document_id, workspace_id=workspace_id, element_id=element_id) }}">Part Studio &lt;{{ element_id }}&gt;</a></li>
+  <li class="breadcrumb-item active" aria-current="page">Feature &lt;{{ feature_id }}&gt;</li>
+{%- endblock -%}
+
+{%- block main -%}
+  <p>The optimization has been carried out and is cached at <code>{{ recording_filename }}</code>.</p>
+  <p>These are the solutions:</p>
+  <table class="table table-responsive">
+    <thead>
+      <tr>
+        <th scope="col" colspan="7">General parameters</th>
+        {% for floor_index in range(0, problem_constants.vector_shape.floor[0]) %}
+          <th scope="col" colspan="2">Floor {{ floor_index }}</th>
+          {% if not loop.last %}
+            <th scope="col" colspan="7" class="table-info">Segment {{ floor_index }}</th>
+          {% endif %}
+        {% endfor %}
+      </tr>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Orientation</th>
+        <th scope="col">Radius</th>
+        <th scope="col">Min. free height</th>
+        <th scope="col">Max. comfort rule deviation</th>
+        <th scope="col">Price</th>
+        <th scope="col">Delivery time</th>
+        {% for floor_index in range(0, problem_constants.vector_shape.floor[0]) %}
+          <th scope="col">Absolute height</th>
+          <th scope="col">Angle clearance</th>
+          {% if not loop.last %}
+            <th scope="col" class="table-info">Height</th>
+            <th scope="col" class="table-info">Start (upward) angle</th>
+            <th scope="col" class="table-info">End (downward) angle</th>
+            <th scope="col" class="table-info">Step count</th>
+            <th scope="col" class="table-info">Step angle</th>
+            <th scope="col" class="table-info">Step height</th>
+            <th scope="col" class="table-info">Step depth</th>
+          {% endif %}
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for case in pareto_cases %}
+        <tr class="text-right">
+          <th scope="row">{{ loop.index }}</th>
+          <td class="text-left">{{ ["Counter-clockwise", "Clockwise"][case.outputs["design_vars._orientation_index"].astype("int")[0]] }}</td>
+          <td>{{ format_mm(case.outputs["design_vars.radius"][0]) }}</td>
+          <td>{{ format_mm(case.outputs["usability.min_free_height"][0]) }}</td>
+          <td>{{ format_percent(case.outputs["usability.max_step_comfort_rule_deviation"][0]) }}</td>
+          <td>{{ case.outputs["price_availability.total_price"].astype("int")[0] }} SEK</td>
+          <td>{{ case.outputs["price_availability.total_delivery_time"].astype("int")[0] }} days</td>
+          {% for floor_index in range(0, problem_constants.vector_shape.floor[0]) %}
+            <td>{{ format_mm(case.outputs["design_vars.floor_height"][floor_index]) }}</td>
+            <td>{{ format_deg(case.outputs["angles.floor_angle_clearance"][floor_index]) }}</td>
+            {% if not loop.last %}
+              <td class="table-info">{{ format_mm(case.outputs["design_vars.segment_height"][floor_index]) }}</td>
+              <td class="table-info">{{ format_deg(case.outputs["angles.segment_start_angle"][floor_index]) }}</td>
+              <td class="table-info">{{ format_deg(case.outputs["angles.segment_end_angle"][floor_index]) }}</td>
+              <td class="table-info">{{ case.outputs["sweep_steps.step_count"].astype("int")[floor_index] }}</td>
+              <td class="table-info">{{ format_deg(case.outputs["sweep_steps.step_angle"][floor_index]) }}</td>
+              <td class="table-info">{{ format_mm(case.outputs["sweep_steps.step_height"][floor_index]) }}</td>
+              <td class="table-info">{{ format_mm(case.outputs["sweep_steps.step_depth"][floor_index]) }}</td>
+            {% endif %}
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{%- endblock -%}

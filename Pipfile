@@ -1,0 +1,26 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask = "*"
+flask-dance = "*"
+requests-onshape = "*"
+python-dotenv = "*"
+openmdao = "*"
+pint = "*"
+attrs = "*"
+
+[dev-packages]
+black = "==18.9b0"
+flake8 = "*"
+flake8-isort = "*"
+ipdb = "*"
+pyinstaller = "*"
+
+[requires]
+python_version = "3.7"
+
+[scripts]
+"dev-server" = "flask run --cert=dev-https.crt --key=dev-https.key"

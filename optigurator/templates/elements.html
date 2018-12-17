@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{%- block breadcrumb -%}
+  <li class="breadcrumb-item"><a href="{{ url_for("main.index") }}">Home</a></li>
+  <li class="breadcrumb-item active" aria-current="page">Document &lt;{{ document_id }}&gt; @ Workspace &lt;{{ workspace_id }}&gt;</li>
+{%- endblock -%}
+
+{%- block main -%}
+  <p>
+    Select the Part Studio that contains your input feature.
+  </p>
+  <div class="row">
+    {% for element in data %}
+      <div class="col-sm-3 mb-3">
+        <div class="card bg-light">
+          <div class="card-body">
+            <h2 class="h5 card-title">{{ element["name"] }}</h2>
+            {% if element["dataType"] == "onshape/partstudio" %}
+              <a href="{{ url_for_element(element_id=element["id"]) }}" class="card-link">Use Part Studio</a>
+            {% else %}
+              <span class="text-muted">Unsuitable element type: <code>{{ element["dataType"] }}</code></span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{%- endblock -%}

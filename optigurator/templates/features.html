@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{%- block breadcrumb -%}
+  <li class="breadcrumb-item"><a href="{{ url_for("main.index") }}">Home</a></li>
+  <li class="breadcrumb-item"><a href="{{ url_for("main.elements", document_id=document_id, workspace_id=workspace_id) }}">Document &lt;{{ document_id }}&gt; @ Workspace &lt;{{ workspace_id }}&gt;</a></li>
+  <li class="breadcrumb-item active" aria-current="page">Part Studio &lt;{{ element_id }}&gt;</li>
+{%- endblock -%}
+
+{%- block main -%}
+  <p>Select your input feature.</p>
+  <div class="row">
+    {% for feature in data["features"] %}
+      <div class="col-sm-3 mb-3">
+        <div class="card bg-light">
+          <div class="card-body">
+            <h2 class="h5 card-title">{{ feature["message"]["name"] }}</h2>
+            {% if feature["message"]["featureType"] == "stair" %}
+              <form action="{{ url_for_optimization(feature_id=feature["message"]["featureId"]) }}" method="POST">
+                <button type="submit" class="btn btn-primary btn-block">Use as optimization input</button>
+              </form>
+            {% else %}
+              <span class="text-muted">Unsuitable feature type: <code>{{ feature["message"]["featureType"] }}</code></span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{%- endblock -%}
