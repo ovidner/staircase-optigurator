@@ -44,11 +44,9 @@ def cumulative_spread(array, x):
     """
     # This is probably inefficient.
     cumulative_effect = np.cumsum(array) - array
-    b = cumulative_effect - np.ones(array.size) * x
-    # -np.zeros to not get -0 when we negate everything in the next step
-    c = np.fmin(-np.zeros(array.size), b)
+    b = x - cumulative_effect
 
-    return np.fmin(array, -c)
+    return np.fmin(array, np.fmax(0, b))
 
 
 def height(sweep_array, pitch_array, angle):

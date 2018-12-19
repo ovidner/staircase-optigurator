@@ -1,3 +1,5 @@
+from itertools import chain
+
 import numpy as np
 from openmdao.api import (
     ExplicitComponent,
@@ -339,8 +341,27 @@ class Usability(ExplicitComponent):
             segment_pitch,
         )
 
-        max_angle = np.fmax(np.sum(floor_segment_sweep) - 360.0, 0.0)
-        angle_samples = np.linspace(0.0, max_angle, int(max_angle / 2) + 1)
+        # All sweep angles where the pitch changes.
+        pitch_changing_sweeps = np.cumsum(floor_segment_sweep)
+        # Beyond this sweep angle, the free height is infinite from our
+        # perspective.
+        max_angle = np.fmax(pitch_changing_sweeps[-1] - 360.0, 0.0)
+
+        # Uses all pitch-changing sweep angles (and the points right under
+        # them) as samples where we evaluate the free height, as these ought to
+        # be the only places where we can find local minima and maxima.
+        angle_samples = np.array(
+            sorted(
+                set(
+                    x
+                    for x in chain(pitch_changing_sweeps, pitch_changing_sweeps - 360.0)
+                    if 0.0 <= x <= max_angle
+                )
+            )
+        )
+
+        # Old brute-force sampling method.
+        # angle_samples = np.linspace(0.0, max_angle, int(max_angle / 2) + 1)
 
         free_heights = [
             (
