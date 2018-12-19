@@ -339,7 +339,7 @@ class Usability(ExplicitComponent):
             segment_pitch,
         )
 
-        max_angle = np.sum(floor_segment_sweep) - 360.0
+        max_angle = np.fmax(np.sum(floor_segment_sweep) - 360.0, 0.0)
         angle_samples = np.linspace(0.0, max_angle, int(max_angle / 2) + 1)
 
         free_heights = [
