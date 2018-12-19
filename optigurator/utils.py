@@ -349,7 +349,7 @@ def problem_constants_from_onshape_feature(top_value_map):
             ]
         ),
     )
-    all_radii = [x / 10 for x in range(6, 16)]  # 0.6 to 1.5 in 0.1 increments
+    all_radii = [x * 100 for x in range(6, 16)]  # 600 to 1500 in 100 increments
     min_radius = (
         get_onshape_value_map_value(top_value_map, "radiusMin").to(ureg.meter).magnitude
     )
@@ -391,7 +391,7 @@ def problem_constants_from_onshape_feature(top_value_map):
                 ]
             ),
         ),
-        radii=[r for r in all_radii if min_radius <= r <= max_radius],
+        radii=[r / 1000 for r in all_radii if int(min_radius * 1000) <= r <= int(max_radius * 1000)],
         orientation=DesignVariable(
             lower=np.array(
                 [
