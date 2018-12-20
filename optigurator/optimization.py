@@ -225,7 +225,7 @@ class SweepSteps(ExplicitComponent):
         segment_extra_sweep = np.fmax(((ideal_extra_sweep + 180) // 360) * 360, 0)
         segment_sweep = inputs["segment_net_sweep"] + segment_extra_sweep
         # 0 degrees sweep will always give a full revolution.
-        segment_sweep[segment_sweep == 0.] = 360.
+        segment_sweep[segment_sweep == 0.0] = 360.0
         segment_pitch = inputs["segment_height"] / segment_sweep
 
         min_step_count = np.fmin(
@@ -513,7 +513,9 @@ def run_optimization(data_dir, problem_constants):
     prob = Problem()
     prob.model = SpiralStaircase(constants=problem_constants)
 
-    prob.model.add_recorder(SqliteRecorder(recording_filename(data_dir, problem_constants.id)))
+    prob.model.add_recorder(
+        SqliteRecorder(recording_filename(data_dir, problem_constants.id))
+    )
     # This saves us some space and probably also time when loading the recording.
     prob.model.recording_options["record_residuals"] = False
     prob.model.recording_options["record_metadata"] = False
@@ -531,7 +533,8 @@ def run_optimization(data_dir, problem_constants):
             "design_vars._orientation_index": 1,
             "design_vars._radius_index": int(
                 np.ceil(np.log2(len(problem_constants.radii)))
-            ) or 1,
+            )
+            or 1,
             "design_vars.extra_sweep_tendency": 2,
             "design_vars.extra_steps_tendency": 3,
         },
