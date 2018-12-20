@@ -224,6 +224,8 @@ class SweepSteps(ExplicitComponent):
         # Rounds the extra sweep to the nearest 360-multiple greater than or equal to 0
         segment_extra_sweep = np.fmax(((ideal_extra_sweep + 180) // 360) * 360, 0)
         segment_sweep = inputs["segment_net_sweep"] + segment_extra_sweep
+        # 0 degrees sweep will always give a full revolution.
+        segment_sweep[segment_sweep == 0.] = 360.
         segment_pitch = inputs["segment_height"] / segment_sweep
 
         min_step_count = np.fmin(
