@@ -511,21 +511,21 @@ def run_optimization(problem_constants):
 
     prob.driver = SimpleGADriver(
         penalty_exponent=2.0,
-        penalty_parameter=50.0,
-        max_gen=100,
-        pop_size=20,
+        penalty_parameter=1000.0,
+        max_gen=75,
+        pop_size=0,  # Automatic
         bits={
-            "design_vars.floor_height": 3,
+            "design_vars.floor_height": 2,
             "design_vars.floor_angle_clearance_scale_factor": 3,
             "design_vars.floor_angle_clearance_placement_factor": 3,
             "design_vars._orientation_index": 1,
-            "design_vars.extra_sweep_tendency": 3,
+            "design_vars.extra_sweep_tendency": 2,
             "design_vars.extra_steps_tendency": 3,
         },
         multi_obj_weights={
             "price_availability.total_price": 1 / 200_000,
             "price_availability.total_delivery_time": 1 / 30,
-            "usability.max_step_comfort_rule_deviation": 20 * 1,
+            "usability.max_step_comfort_rule_deviation": 25 * 1,
         },
     )
     prob.setup()
