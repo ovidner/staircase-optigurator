@@ -11,6 +11,7 @@ python-dotenv = "*"
 openmdao = "*"
 pint = "*"
 attrs = "*"
+click = "*"
 
 [dev-packages]
 black = "==18.9b0"
