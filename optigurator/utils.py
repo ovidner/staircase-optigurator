@@ -237,7 +237,7 @@ class ProblemConstants:
     @property
     def radius_index(self):
         return DesignVariable(
-            lower=np.array([0], dtype=int), upper=np.array([len(self.radii)], dtype=int)
+            lower=np.array([0], dtype=int), upper=np.array([len(self.radii) - 1], dtype=int)
         )
 
     @property
