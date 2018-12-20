@@ -458,6 +458,11 @@ class SpiralStaircase(Group):
             upper=self.constants.orientation.upper,
         )
         self.add_design_var(
+            "design_vars._radius_index",
+            lower=self.constants.radius_index.lower,
+            upper=self.constants.radius_index.upper,
+        )
+        self.add_design_var(
             "design_vars.floor_height",
             lower=self.constants.floor_height.lower,
             upper=self.constants.floor_height.upper,
@@ -519,6 +524,9 @@ def run_optimization(problem_constants):
             "design_vars.floor_angle_clearance_scale_factor": 3,
             "design_vars.floor_angle_clearance_placement_factor": 3,
             "design_vars._orientation_index": 1,
+            "design_vars._radius_index": int(
+                np.ceil(np.log2(len(problem_constants.radii)))
+            ) or 1,
             "design_vars.extra_sweep_tendency": 2,
             "design_vars.extra_steps_tendency": 3,
         },
