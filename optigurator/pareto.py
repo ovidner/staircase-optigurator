@@ -8,46 +8,34 @@ def get_case_reader(problem_constants):
     return CaseReader(recording_filename(problem_constants.id))
 
 
-def OldData_recorder(problem_constants, crm):
-    NrOfEvaluations = crm.list_cases()
-    print("Number of evaluations: ", len(NrOfEvaluations))
-    inputPoints = []
-
-    for i in range(len(NrOfEvaluations)):
-        model_case = crm.get_case(i)
-
-        Steghojd = max(model_case.outputs["sweep_steps.step_height"])
-        Stegdjup = min(model_case.outputs["usability.min_max_step_depth"])
-        Free_height = min(model_case.outputs["usability.min_free_height"])
+def generate_valid_points(problem_constants, crm):
+    for (i, case_id) in enumerate(crm.list_cases()):
+        model_case = crm.get_case(case_id)
 
         if (
-            Steghojd <= problem_constants.step_height.upper
-            and Stegdjup >= problem_constants.step_depth.lower
-            and Free_height > problem_constants.free_height_lower
+            model_case.outputs["usability.min_max_step_height"][1]
+            <= problem_constants.step_height.upper
+            and model_case.outputs["usability.min_max_step_depth"][0]
+            >= problem_constants.step_depth.lower
+            and model_case.outputs["usability.min_free_height"][0]
+            > problem_constants.free_height_lower
         ):
-            Price = max(model_case.outputs["price_availability.total_price"])
-            Ergonomi = max(
-                model_case.outputs["usability.max_step_comfort_rule_deviation"]
-            )
-            Leveranstid = max(
-                model_case.outputs["price_availability.total_delivery_time"]
-            )
-            vector = [Price, Ergonomi, Leveranstid, i]
-            inputPoints.append(vector)
-
-    return inputPoints
+            yield [
+                model_case.outputs["price_availability.total_price"][0],
+                model_case.outputs["usability.max_step_comfort_rule_deviation"][0],
+                model_case.outputs["price_availability.total_delivery_time"][0],
+                i,
+            ]
 
 
 def calculate(inputPoints, dominates):
-
     paretoPoints = set()
     candidateRowNr = 0
     dominatedPoints = set()
     normalizedRowNr = 0
 
     # skapar en kopia på matrisen som normaliseras senare
-    # NormalizedPoints = inputPoints.copy()
-    normalizedPoints = np.array(list(inputPoints.copy()))
+    normalizedPoints = np.array(inputPoints.copy())
 
     sum1 = 0
     sum2 = 0
@@ -198,7 +186,7 @@ def WeightPPpoints(pp, my_weights):
 
 def generate_pareto_cases(problem_constants):
     crm = get_case_reader(problem_constants)
-    input_points = OldData_recorder(problem_constants, crm)
+    input_points = list(generate_valid_points(problem_constants, crm))
     pareto_points, dominated_points, dp, pp = calculate(input_points, dominates)
     my_weights = np.matrix(
         [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
