@@ -509,11 +509,11 @@ class SpiralStaircase(Group):
         self.add_objective("usability.max_step_comfort_rule_deviation")
 
 
-def run_optimization(problem_constants):
+def run_optimization(data_dir, problem_constants):
     prob = Problem()
     prob.model = SpiralStaircase(constants=problem_constants)
 
-    prob.model.add_recorder(SqliteRecorder(recording_filename(problem_constants.id)))
+    prob.model.add_recorder(SqliteRecorder(recording_filename(data_dir, problem_constants.id)))
     prob.model.recording_options["record_outputs"] = True
 
     prob.driver = SimpleGADriver(

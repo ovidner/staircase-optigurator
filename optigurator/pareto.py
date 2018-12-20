@@ -4,8 +4,8 @@ from openmdao.api import CaseReader
 from optigurator.utils import recording_filename
 
 
-def get_case_reader(problem_constants):
-    return CaseReader(recording_filename(problem_constants.id))
+def get_case_reader(data_dir, problem_constants):
+    return CaseReader(recording_filename(data_dir, problem_constants.id))
 
 
 def generate_valid_points(problem_constants, crm):
@@ -184,8 +184,8 @@ def WeightPPpoints(pp, my_weights):
     return IDpoints
 
 
-def generate_pareto_cases(problem_constants):
-    crm = get_case_reader(problem_constants)
+def generate_pareto_cases(data_dir, problem_constants):
+    crm = get_case_reader(data_dir, problem_constants)
     input_points = list(generate_valid_points(problem_constants, crm))
     pareto_points, dominated_points, dp, pp = calculate(input_points, dominates)
     my_weights = np.matrix(

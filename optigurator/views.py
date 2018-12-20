@@ -1,7 +1,7 @@
 import os
 from functools import partial, wraps
 
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, current_app, redirect, render_template, request, url_for
 from oauthlib.oauth2 import TokenExpiredError
 
 from optigurator.onshape import onshape
@@ -107,12 +107,16 @@ def optimize(document_id, workspace_id, element_id, feature_id):
     ).json()
 
     problem_constants = problem_constants_from_onshape_feature(response["result"])
-    problem_recording_filename = recording_filename(problem_constants.id)
+    problem_recording_filename = recording_filename(
+        current_app.config["DATA_DIR"], problem_constants.id
+    )
 
     if not os.path.isfile(problem_recording_filename):
-        run_optimization(problem_constants)
+        run_optimization(current_app.config["DATA_DIR"], problem_constants)
 
-    pareto_cases = list(generate_pareto_cases(problem_constants))
+    pareto_cases = list(
+        generate_pareto_cases(current_app.config["DATA_DIR"], problem_constants)
+    )
 
     return render_template(
         "optimize.html",

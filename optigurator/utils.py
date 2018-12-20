@@ -11,7 +11,6 @@ from pint import UnitRegistry
 ureg = UnitRegistry()
 
 ANGLE_VARS_SWEEP_DIRECTION = np.array([1, -1])
-DATA_DIR = "data"
 
 
 def interweave(a, b):
@@ -425,5 +424,5 @@ def format_percent(num):
     return "{:.1f}%".format(num * 100)
 
 
-def recording_filename(id_):
-    return os.path.abspath(os.path.join(DATA_DIR, "recordings", f"{id_}.sqlite"))
+def recording_filename(data_dir, id_):
+    return os.path.join(data_dir, "recordings", f"{id_}.sqlite")
