@@ -514,7 +514,10 @@ def run_optimization(data_dir, problem_constants):
     prob.model = SpiralStaircase(constants=problem_constants)
 
     prob.model.add_recorder(SqliteRecorder(recording_filename(data_dir, problem_constants.id)))
-    prob.model.recording_options["record_outputs"] = True
+    # This saves us some space and probably also time when loading the recording.
+    prob.model.recording_options["record_residuals"] = False
+    prob.model.recording_options["record_metadata"] = False
+    prob.model.recording_options["record_model_metadata"] = False
 
     prob.driver = SimpleGADriver(
         penalty_exponent=2.0,
