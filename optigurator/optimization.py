@@ -373,7 +373,7 @@ class Usability(ExplicitComponent):
             for angle in angle_samples
         ]
 
-        return np.min(free_heights)
+        return np.min(free_heights) if free_heights else np.inf
 
 
 @with_constants
