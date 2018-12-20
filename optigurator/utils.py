@@ -136,7 +136,7 @@ class ProblemConstants:
     in one single object.
     """
 
-    name: str
+    data_dir: str
     floor_height: DesignVariable
     radii: list
     segment_start_angle: DesignVariable
@@ -256,7 +256,7 @@ class ProblemConstants:
     def radius_availability(self, radius):
         # Let's just imagine that this method would represent a frozen state
         # from an API call made at initialization time
-        with open(os.path.abspath(os.path.join(DATA_DIR, "availability.json"))) as fp:
+        with open(os.path.join(self.data_dir, "availability.json")) as fp:
             data = json.load(fp)
 
         # Woohoo, that's one nasty dict lookup!
@@ -265,7 +265,7 @@ class ProblemConstants:
     def radius_price(self, radius):
         # Let's just imagine that this method would represent a frozen state
         # from an API call made at initialization time
-        with open(os.path.abspath(os.path.join(DATA_DIR, "price.json"))) as fp:
+        with open(os.path.join(self.data_dir, "price.json")) as fp:
             data = json.load(fp)
 
         # Woohoo, that's one nasty dict lookup!
@@ -329,7 +329,7 @@ def yield_floor_values(top_value_map):
         )
 
 
-def problem_constants_from_onshape_feature(top_value_map):
+def problem_constants_from_onshape_feature(data_dir, top_value_map):
 
     floor_parameters = np.array(
         list(yield_floor_values(top_value_map)),
@@ -357,7 +357,7 @@ def problem_constants_from_onshape_feature(top_value_map):
     )
 
     return ProblemConstants(
-        name="foo",
+        data_dir=data_dir,
         floor_height=DesignVariable(
             lower=floor_parameters["height"], upper=floor_parameters["height"]
         ),

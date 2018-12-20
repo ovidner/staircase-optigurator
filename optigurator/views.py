@@ -93,6 +93,8 @@ def features(document_id, workspace_id, element_id):
 )
 @require_onshape_auth
 def optimize(document_id, workspace_id, element_id, feature_id):
+    data_dir = current_app.config["DATA_DIR"]
+
     fs = """
         function(context is Context, queries is Map) {{
             return getVariable(context, "stairDefinition_{feature_id}");
@@ -106,17 +108,15 @@ def optimize(document_id, workspace_id, element_id, feature_id):
         json={"script": fs, "queries": []},
     ).json()
 
-    problem_constants = problem_constants_from_onshape_feature(response["result"])
-    problem_recording_filename = recording_filename(
-        current_app.config["DATA_DIR"], problem_constants.id
+    problem_constants = problem_constants_from_onshape_feature(
+        data_dir, response["result"]
     )
+    problem_recording_filename = recording_filename(data_dir, problem_constants.id)
 
     if not os.path.isfile(problem_recording_filename):
-        run_optimization(current_app.config["DATA_DIR"], problem_constants)
+        run_optimization(data_dir, problem_constants)
 
-    pareto_cases = list(
-        generate_pareto_cases(current_app.config["DATA_DIR"], problem_constants)
-    )
+    pareto_cases = list(generate_pareto_cases(data_dir, problem_constants))
 
     return render_template(
         "optimize.html",
