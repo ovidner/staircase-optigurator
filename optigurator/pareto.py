@@ -22,7 +22,7 @@ def generate_valid_points(problem_constants, crm):
         ):
             yield [
                 model_case.outputs["price_availability.total_price"][0],
-                model_case.outputs["usability.max_step_comfort_rule_deviation"][0],
+                model_case.outputs["usability.usability_penalty"][0],
                 model_case.outputs["price_availability.total_delivery_time"][0],
                 i,
             ]

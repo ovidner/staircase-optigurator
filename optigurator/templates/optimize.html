@@ -26,7 +26,7 @@
         <th scope="col">Orientation</th>
         <th scope="col">Radius</th>
         <th scope="col">Min. free height</th>
-        <th scope="col">Max. comfort rule deviation</th>
+        <th scope="col">Usability score</th>
         <th scope="col">Price</th>
         <th scope="col">Delivery time</th>
         {% for floor_index in range(0, problem_constants.vector_shape.floor[0]) %}
@@ -51,7 +51,7 @@
           <td class="text-left">{{ ["Counter-clockwise", "Clockwise"][case.outputs["design_vars._orientation_index"].astype("int")[0]] }}</td>
           <td>{{ format_mm(case.outputs["design_vars.radius"][0]) }}</td>
           <td>{{ format_mm(case.outputs["usability.min_free_height"][0]) }}</td>
-          <td>{{ format_percent(case.outputs["usability.max_step_comfort_rule_deviation"][0]) }}</td>
+          <td>{{ format_percent(1 - case.outputs["usability.usability_penalty"][0]) }}</td>
           <td>{{ case.outputs["price_availability.total_price"].astype("int")[0] }} SEK</td>
           <td>{{ case.outputs["price_availability.total_delivery_time"].astype("int")[0] }} days</td>
           {% for floor_index in range(0, problem_constants.vector_shape.floor[0]) %}

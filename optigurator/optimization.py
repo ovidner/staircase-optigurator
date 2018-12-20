@@ -301,6 +301,9 @@ class Usability(ExplicitComponent):
             shape=self.constants.vector_shape.common,
             units=None,
         )
+        self.add_output(
+            "usability_penalty", shape=self.constants.vector_shape.common, units=None
+        )
         self.add_output("min_max_step_height", shape=(2,), units="m")
         self.add_output("min_max_step_depth", shape=(2,), units="m")
         self.declare_partials("*", "*", method="fd")
@@ -315,6 +318,8 @@ class Usability(ExplicitComponent):
         step_comfort_rule_2_deviation = (
             np.fmax(np.abs(step_comfort_rule_2_value - 0.635) - 0.0254, 0) / 0.635
         )
+        max_nice_step_height = 0.180
+        min_nice_step_depth = 0.200
 
         outputs["step_comfort_rule_1_value"] = step_comfort_rule_1_value
         outputs["step_comfort_rule_2_value"] = step_comfort_rule_2_value
@@ -322,12 +327,22 @@ class Usability(ExplicitComponent):
             np.fmax(step_comfort_rule_1_deviation, step_comfort_rule_2_deviation)
         )
 
-        outputs["min_max_step_height"] = np.array(
-            [np.min(inputs["step_height"]), np.max(inputs["step_height"])]
-        )
+        min_step_depth = np.min(inputs["step_depth"])
+        max_step_depth = np.max(inputs["step_depth"])
+        min_step_height = np.min(inputs["step_height"])
+        max_step_height = np.max(inputs["step_height"])
+
         outputs["min_max_step_depth"] = np.array(
-            [np.min(inputs["step_depth"]), np.max(inputs["step_depth"])]
+            [min_step_depth, max_step_depth]
         )
+        outputs["min_max_step_height"] = np.array(
+            [min_step_height, max_step_height]
+        )
+
+        nice_step_depth_deviation = np.fmax(min_nice_step_depth - min_step_depth, 0) / min_nice_step_depth
+        nice_step_height_deviation = np.fmax(max_step_height - max_nice_step_height, 0) / max_nice_step_height
+
+        outputs["usability_penalty"] = outputs["max_step_comfort_rule_deviation"] + 2 * nice_step_depth_deviation + 4 * nice_step_height_deviation
 
         outputs["min_free_height"] = self.compute_free_height(
             inputs["floor_angle_clearance"],
@@ -506,7 +521,7 @@ class SpiralStaircase(Group):
 
         self.add_objective("price_availability.total_price")
         self.add_objective("price_availability.total_delivery_time")
-        self.add_objective("usability.max_step_comfort_rule_deviation")
+        self.add_objective("usability.usability_penalty")
 
 
 def run_optimization(data_dir, problem_constants):
@@ -541,7 +556,7 @@ def run_optimization(data_dir, problem_constants):
         multi_obj_weights={
             "price_availability.total_price": 1 / 200_000,
             "price_availability.total_delivery_time": 1 / 30,
-            "usability.max_step_comfort_rule_deviation": 25 * 1,
+            "usability.usability_penalty": 25 * 1,
         },
     )
     prob.setup()
