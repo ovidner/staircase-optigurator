@@ -1,4 +1,5 @@
 *
 # Let sub-directories and gitignores be
 !.gitignore
+!*.example
 !*/
